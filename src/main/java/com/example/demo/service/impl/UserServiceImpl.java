@@ -3,25 +3,18 @@ package com.example.demo.service.impl;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
-
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder
-    ) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -31,10 +24,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Email already in use");
         }
 
-        user.setPassword(
-                passwordEncoder.encode(user.getPassword())
-        );
-
+        // NO password encoding
         return userRepository.save(user);
     }
 
@@ -46,7 +36,7 @@ public class UserServiceImpl implements UserService {
                         new ResourceNotFoundException("User not found")
                 );
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!user.getPassword().equals(password)) {
             throw new BadRequestException("Invalid input");
         }
 
