@@ -7,26 +7,36 @@ import java.time.LocalDateTime;
 @Table(name = "warranty_claim_records")
 public class WarrantyClaimRecord {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String serialNumber;
+
+    @Column(nullable = false)
     private String claimantName;
+
     private String claimantEmail;
+
+    @Column(nullable = false)
     private String claimReason;
-    private String status = "PENDING";
+
+    @Column(nullable = false)
+    private String status;
+
     private LocalDateTime submittedAt;
 
-    @ManyToOne
-    private DeviceOwnershipRecord device;
+    private LocalDateTime createdAt;
 
     @PrePersist
-    void onCreate() {
-        submittedAt = LocalDateTime.now();
+    public void prePersist() {
+        this.submittedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = "PENDING";
+        }
     }
 
-    public String getSerialNumber() { return serialNumber; }
-    public String getClaimReason() { return claimReason; }
-    public void setStatus(String status) { this.status = status; }
-    public void setDevice(DeviceOwnershipRecord device) { this.device = device; }
+    // getters and setters
 }
