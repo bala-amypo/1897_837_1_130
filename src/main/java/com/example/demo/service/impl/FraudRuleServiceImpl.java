@@ -1,39 +1,43 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.FraudAlertRecord;
-import com.example.demo.repository.FraudAlertRecordRepository;
-import com.example.demo.service.FraudAlertService;
+import com.example.demo.model.FraudRule;
+import com.example.demo.repository.FraudRuleRepository;
+import com.example.demo.service.FraudRuleService;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.exception.BadRequestException;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class FraudAlertServiceImpl implements FraudAlertService {
+public class FraudRuleServiceImpl implements FraudRuleService {
 
-    private final FraudAlertRecordRepository repository;
+    private final FraudRuleRepository repository;
 
-    public FraudAlertServiceImpl(FraudAlertRecordRepository repository) {
+    public FraudRuleServiceImpl(FraudRuleRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public FraudAlertRecord create(FraudAlertRecord alert) {
-        return repository.save(alert);
+    public FraudRule create(FraudRule rule) {
+        if (repository.existsByRuleCode(rule.getRuleCode())) {
+            throw new BadRequestException("Rule already exists");
+        }
+        return repository.save(rule);
     }
 
     @Override
-    public FraudAlertRecord resolve(Long id) {
-
-        FraudAlertRecord alert = getById(id);
-        alert.setResolved(true);
-
-        return repository.save(alert);
+    public FraudRule update(Long id, FraudRule updated) {
+        FraudRule rule = getById(id);
+        rule.setRuleType(updated.getRuleType());
+        rule.setDescription(updated.getDescription());
+        rule.setActive(updated.getActive());
+        return repository.save(rule);
     }
 
     @Override
-    public FraudAlertRecord getById(Long id) {
+    public FraudRule getById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Request not found")
@@ -41,17 +45,20 @@ public class FraudAlertServiceImpl implements FraudAlertService {
     }
 
     @Override
-    public List<FraudAlertRecord> getBySerial(String serialNumber) {
-        return repository.findBySerialNumber(serialNumber);
+    public FraudRule getByCode(String ruleCode) {
+        return repository.findByRuleCode(ruleCode)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Match not found")
+                );
     }
 
     @Override
-    public List<FraudAlertRecord> getByClaim(Long claimId) {
-        return repository.findByClaimId(claimId);
-    }
-
-    @Override
-    public List<FraudAlertRecord> getAll() {
+    public List<FraudRule> getAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<FraudRule> getActive() {
+        return repository.findByActiveTrue();
     }
 }
