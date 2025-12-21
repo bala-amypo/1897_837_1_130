@@ -7,22 +7,56 @@ import java.time.LocalDateTime;
 @Table(name = "stolen_device_reports")
 public class StolenDeviceReport {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String serialNumber;
+
+    @Column(nullable = false)
     private String reportedBy;
+
     private String details;
+
     private LocalDateTime reportDate;
 
-    @ManyToOne
-    private DeviceOwnershipRecord device;
+    public StolenDeviceReport() {}
 
     @PrePersist
-    void onCreate() {
-        reportDate = LocalDateTime.now();
+    public void onCreate() {
+        this.reportDate = LocalDateTime.now();
     }
 
-    public String getSerialNumber() { return serialNumber; }
-    public void setDevice(DeviceOwnershipRecord device) { this.device = device; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getReportedBy() {
+        return reportedBy;
+    }
+
+    public void setReportedBy(String reportedBy) {
+        this.reportedBy = reportedBy;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public LocalDateTime getReportDate() {
+        return reportDate;
+    }
 }
