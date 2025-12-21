@@ -3,25 +3,28 @@ package com.example.demo.service.impl;
 import com.example.demo.model.WarrantyClaimRecord;
 import com.example.demo.repository.WarrantyClaimRecordRepository;
 import com.example.demo.service.WarrantyClaimService;
+import com.example.demo.exception.ResourceNotFoundException;
+
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class WarrantyClaimServiceImpl implements WarrantyClaimService {
 
-    private final WarrantyClaimRecordRepository claimRepository;
+    private final WarrantyClaimRecordRepository repository;
 
     public WarrantyClaimServiceImpl(
-            WarrantyClaimRecordRepository claimRepository
+            WarrantyClaimRecordRepository repository
     ) {
-        this.claimRepository = claimRepository;
+        this.repository = repository;
     }
 
     @Override
     public WarrantyClaimRecord submitClaim(WarrantyClaimRecord claim) {
 
         boolean duplicate =
-                claimRepository.existsBySerialNumberAndClaimReason(
+                repository.existsBySerialNumberAndClaimReason(
                         claim.getSerialNumber(),
                         claim.getClaimReason()
                 );
@@ -30,36 +33,36 @@ public class WarrantyClaimServiceImpl implements WarrantyClaimService {
             claim.setStatus("FLAGGED");
         }
 
-        return claimRepository.save(claim);
+        return repository.save(claim);
     }
 
     @Override
-    public WarrantyClaimRecord updateClaimStatus(Long id, String status) {
+    public WarrantyClaimRecord updateStatus(Long id, String status) {
 
-        WarrantyClaimRecord claim =
-                claimRepository.findById(id)
-                        .orElseThrow(() ->
-                                new java.util.NoSuchElementException(
-                                        "Request not found"
-                                )
-                        );
+        WarrantyClaimRecord claim = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Request not found")
+                );
 
         claim.setStatus(status);
-        return claimRepository.save(claim);
+        return repository.save(claim);
     }
 
     @Override
-    public Optional<WarrantyClaimRecord> getClaimById(Long id) {
-        return claimRepository.findById(id);
+    public WarrantyClaimRecord getById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Request not found")
+                );
     }
 
     @Override
-    public List<WarrantyClaimRecord> getClaimsBySerial(String serialNumber) {
-        return claimRepository.findBySerialNumber(serialNumber);
+    public List<WarrantyClaimRecord> getBySerial(String serialNumber) {
+        return repository.findBySerialNumber(serialNumber);
     }
 
     @Override
-    public List<WarrantyClaimRecord> getAllClaims() {
-        return claimRepository.findAll();
+    public List<WarrantyClaimRecord> getAll() {
+        return repository.findAll();
     }
 }

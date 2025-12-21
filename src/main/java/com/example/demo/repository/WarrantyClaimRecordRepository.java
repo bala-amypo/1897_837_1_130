@@ -14,6 +14,4 @@ public interface WarrantyClaimRecordRepository
             String serialNumber,
             String claimReason
     );
-
-    List<WarrantyClaimRecord> findByStatus(String status);
 }

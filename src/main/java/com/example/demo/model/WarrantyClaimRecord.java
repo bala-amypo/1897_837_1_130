@@ -11,19 +11,29 @@ public class WarrantyClaimRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String serialNumber;
+
+    @Column(nullable = false)
     private String claimantName;
+
     private String claimantEmail;
+
+    @Column(nullable = false)
     private String claimReason;
+
+    @Column(nullable = false)
     private String status;
 
     private LocalDateTime createdAt;
 
+    public WarrantyClaimRecord() {}
+
     @PrePersist
-    void onCreate() {
-        createdAt = LocalDateTime.now();
-        if (status == null) {
-            status = "PENDING";
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = "PENDING";
         }
     }
 
@@ -37,6 +47,22 @@ public class WarrantyClaimRecord {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public String getClaimantName() {
+        return claimantName;
+    }
+
+    public void setClaimantName(String claimantName) {
+        this.claimantName = claimantName;
+    }
+
+    public String getClaimantEmail() {
+        return claimantEmail;
+    }
+
+    public void setClaimantEmail(String claimantEmail) {
+        this.claimantEmail = claimantEmail;
     }
 
     public String getClaimReason() {

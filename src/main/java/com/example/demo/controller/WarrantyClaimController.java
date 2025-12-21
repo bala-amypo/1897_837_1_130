@@ -13,51 +13,39 @@ import java.util.List;
 @RequestMapping("/api/claims")
 public class WarrantyClaimController {
 
-    private final WarrantyClaimService claimService;
+    private final WarrantyClaimService service;
 
-    public WarrantyClaimController(
-            WarrantyClaimService claimService
-    ) {
-        this.claimService = claimService;
+    public WarrantyClaimController(WarrantyClaimService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<WarrantyClaimRecord> submitClaim(
+    public ResponseEntity<WarrantyClaimRecord> submit(
             @RequestBody WarrantyClaimRecord claim
     ) {
         return new ResponseEntity<>(
-                claimService.submitClaim(claim),
+                service.submitClaim(claim),
                 HttpStatus.CREATED
         );
     }
 
     @GetMapping
-    public ResponseEntity<List<WarrantyClaimRecord>> getAllClaims() {
-        return ResponseEntity.ok(
-                claimService.getAllClaims()
-        );
+    public ResponseEntity<List<WarrantyClaimRecord>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<WarrantyClaimRecord> getClaimById(
+    public ResponseEntity<WarrantyClaimRecord> getById(
             @PathVariable Long id
     ) {
-        return claimService.getClaimById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() ->
-                        new java.util.NoSuchElementException(
-                                "Request not found"
-                        )
-                );
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @GetMapping("/serial/{serialNumber}")
     public ResponseEntity<List<WarrantyClaimRecord>> getBySerial(
             @PathVariable String serialNumber
     ) {
-        return ResponseEntity.ok(
-                claimService.getClaimsBySerial(serialNumber)
-        );
+        return ResponseEntity.ok(service.getBySerial(serialNumber));
     }
 
     @PutMapping("/{id}/status")
@@ -66,7 +54,7 @@ public class WarrantyClaimController {
             @RequestParam String status
     ) {
         return ResponseEntity.ok(
-                claimService.updateClaimStatus(id, status)
+                service.updateStatus(id, status)
         );
     }
 }
