@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FraudAlertRecordRepository extends JpaRepository<FraudAlertRecord, Long> {
     List<FraudAlertRecord> findByClaimId(Long claimId);
+    // Added missing method
+    List<FraudAlertRecord> findBySerialNumber(String serialNumber);
 }
