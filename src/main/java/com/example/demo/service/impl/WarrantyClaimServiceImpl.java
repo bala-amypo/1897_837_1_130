@@ -29,12 +29,14 @@ public class WarrantyClaimServiceImpl {
     }
 
     public WarrantyClaimRecord submitClaim(WarrantyClaimRecord claim) {
+        // Validate device exists
         DeviceOwnershipRecord device = deviceRepo.findBySerialNumber(claim.getSerialNumber())
-                .orElseThrow(() -> new NoSuchElementException("Device not found"));
+                .orElseThrow(() -> new NoSuchElementException("Device not found")); // Matches spec keyword
 
+        // Check conditions to FLAG
         boolean isDuplicate = claimRepo.existsBySerialNumberAndClaimReason(claim.getSerialNumber(), claim.getClaimReason());
         boolean isStolen = stolenRepo.existsBySerialNumber(claim.getSerialNumber());
-        boolean isExpired = device.getWarrantyExpiration().isBefore(LocalDate.now());
+        boolean isExpired = device.getWarrantyExpiration() != null && device.getWarrantyExpiration().isBefore(LocalDate.now());
 
         if (isDuplicate || isStolen || isExpired) {
             claim.setStatus("FLAGGED");
@@ -46,12 +48,21 @@ public class WarrantyClaimServiceImpl {
     }
 
     public WarrantyClaimRecord updateClaimStatus(Long id, String status) {
-        WarrantyClaimRecord claim = claimRepo.findById(id).orElseThrow();
+        WarrantyClaimRecord claim = claimRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Claim not found"));
         claim.setStatus(status);
         return claimRepo.save(claim);
     }
 
-    public Optional<WarrantyClaimRecord> getClaimById(Long id) { return claimRepo.findById(id); }
-    public List<WarrantyClaimRecord> getAllClaims() { return claimRepo.findAll(); }
-    public List<WarrantyClaimRecord> getClaimsBySerial(String serial) { return claimRepo.findBySerialNumber(serial); }
+    public Optional<WarrantyClaimRecord> getClaimById(Long id) {
+        return claimRepo.findById(id);
+    }
+
+    public List<WarrantyClaimRecord> getAllClaims() {
+        return claimRepo.findAll();
+    }
+
+    public List<WarrantyClaimRecord> getClaimsBySerial(String serial) {
+        return claimRepo.findBySerialNumber(serial);
+    }
 }

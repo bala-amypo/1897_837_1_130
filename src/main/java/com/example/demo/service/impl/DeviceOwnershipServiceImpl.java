@@ -11,7 +11,9 @@ import java.util.Optional;
 public class DeviceOwnershipServiceImpl {
     private final DeviceOwnershipRecordRepository repo;
 
-    public DeviceOwnershipServiceImpl(DeviceOwnershipRecordRepository repo) { this.repo = repo; }
+    public DeviceOwnershipServiceImpl(DeviceOwnershipRecordRepository repo) {
+        this.repo = repo;
+    }
 
     public DeviceOwnershipRecord registerDevice(DeviceOwnershipRecord device) {
         if (repo.existsBySerialNumber(device.getSerialNumber())) {
@@ -24,7 +26,9 @@ public class DeviceOwnershipServiceImpl {
         return repo.findBySerialNumber(serial);
     }
 
-    public List<DeviceOwnershipRecord> getAllDevices() { return repo.findAll(); }
+    public List<DeviceOwnershipRecord> getAllDevices() {
+        return repo.findAll();
+    }
 
     public DeviceOwnershipRecord updateDeviceStatus(Long id, boolean active) {
         DeviceOwnershipRecord device = repo.findById(id)
