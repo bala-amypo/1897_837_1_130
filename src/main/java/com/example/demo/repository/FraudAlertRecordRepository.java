@@ -5,16 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.model.WarrantyClaimRecord;
+import com.example.demo.model.FraudAlertRecord;
 
 @Repository
-public interface WarrantyClaimRecordRepository
-        extends JpaRepository<WarrantyClaimRecord, Long> {
+public interface FraudAlertRecordRepository
+        extends JpaRepository<FraudAlertRecord, Long> {
 
-    boolean existsBySerialNumberAndClaimReason(
-            String serialNumber,
-            String claimReason
-    );
-
-    List<WarrantyClaimRecord> findBySerialNumber(String serialNumber);
+    List<FraudAlertRecord> findByClaimId(Long claimId);
 }
