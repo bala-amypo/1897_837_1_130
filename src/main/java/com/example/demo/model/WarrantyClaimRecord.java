@@ -1,35 +1,41 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "warranty_claim_records")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class WarrantyClaimRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String serialNumber;
-    private String claimantName;
-    private String claimantEmail;
     private String claimReason;
-    
-    private LocalDateTime submittedAt;
-    
-    @Builder.Default
-    private String status = "PENDING"; // PENDING, APPROVED, REJECTED, FLAGGED
-    
-    private LocalDateTime createdAt;
+    private String status = "PENDING";
 
-    @PrePersist
-    protected void onCreate() { 
-        this.createdAt = LocalDateTime.now(); 
-        if(this.submittedAt == null) this.submittedAt = LocalDateTime.now();
+    /* ===== BUILDER ===== */
+    public static Builder builder() {
+        return new Builder();
     }
+
+    public static class Builder {
+        private final WarrantyClaimRecord c = new WarrantyClaimRecord();
+
+        public Builder id(Long id) { c.id = id; return this; }
+        public Builder serialNumber(String s) { c.serialNumber = s; return this; }
+        public Builder claimReason(String r) { c.claimReason = r; return this; }
+        public Builder status(String s) { c.status = s; return this; }
+
+        public WarrantyClaimRecord build() { return c; }
+    }
+
+    /* ===== GETTERS / SETTERS ===== */
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getSerialNumber() { return serialNumber; }
+    public String getClaimReason() { return claimReason; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }

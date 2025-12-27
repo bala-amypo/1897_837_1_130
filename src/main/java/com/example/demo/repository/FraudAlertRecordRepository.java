@@ -1,11 +1,20 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.FraudAlertRecord;
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface FraudAlertRecordRepository extends JpaRepository<FraudAlertRecord, Long> {
-    List<FraudAlertRecord> findByClaimId(Long claimId);
-    // Added missing method
-    List<FraudAlertRecord> findBySerialNumber(String serialNumber);
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.model.WarrantyClaimRecord;
+
+@Repository
+public interface WarrantyClaimRecordRepository
+        extends JpaRepository<WarrantyClaimRecord, Long> {
+
+    boolean existsBySerialNumberAndClaimReason(
+            String serialNumber,
+            String claimReason
+    );
+
+    List<WarrantyClaimRecord> findBySerialNumber(String serialNumber);
 }

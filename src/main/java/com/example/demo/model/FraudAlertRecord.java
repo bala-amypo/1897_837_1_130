@@ -1,26 +1,37 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "fraud_alert_records")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class FraudAlertRecord {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long claimId;
     private String serialNumber;
-    private String alertType;
-    private String severity; // LOW, MEDIUM, HIGH, CRITICAL
-    private String message;
-    private LocalDateTime alertDate;
-    
-    @Builder.Default
     private Boolean resolved = false;
 
-    @PrePersist
-    protected void onCreate() { this.alertDate = LocalDateTime.now(); }
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final FraudAlertRecord f = new FraudAlertRecord();
+
+        public Builder id(Long id) { f.id = id; return this; }
+        public Builder claimId(Long c) { f.claimId = c; return this; }
+        public Builder serialNumber(String s) { f.serialNumber = s; return this; }
+        public Builder resolved(Boolean r) { f.resolved = r; return this; }
+
+        public FraudAlertRecord build() { return f; }
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getClaimId() { return claimId; }
+    public Boolean getResolved() { return resolved; }
+    public void setResolved(Boolean resolved) { this.resolved = resolved; }
 }
