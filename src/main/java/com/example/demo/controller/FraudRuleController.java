@@ -1,10 +1,9 @@
 package com.example.demo.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.model.FraudRule;
 import com.example.demo.service.FraudRuleService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/fraud-rules")
@@ -17,11 +16,20 @@ public class FraudRuleController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRule(
-            @RequestBody FraudRule rule
-    ) {
-        return ResponseEntity.status(201)
-                .body(ruleService.createRule(rule));
+    public ResponseEntity<?> createRule(@RequestBody FraudRule rule) {
+        return ResponseEntity.ok(ruleService.createRule(rule));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllRules() {
+        return ResponseEntity.ok(ruleService.getAllRules());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRuleById(@PathVariable Long id) {
+        // Implementation detail: typically service.getById, explicitly implied by repo structure
+        return ResponseEntity.ok(ruleService.getAllRules().stream()
+            .filter(r -> r.getId().equals(id)).findFirst().orElseThrow());
     }
 
     @GetMapping("/active")
@@ -29,13 +37,8 @@ public class FraudRuleController {
         return ResponseEntity.ok(ruleService.getActiveRules());
     }
 
-    @GetMapping("/{code}")
-    public ResponseEntity<?> getRuleByCode(
-            @PathVariable String code
-    ) {
-        return ResponseEntity.ok(
-                ruleService.getRuleByCode(code)
-        );
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateRule(@PathVariable Long id, @RequestBody FraudRule rule) {
+        return ResponseEntity.ok(ruleService.updateRule(id, rule));
     }
 }
-
