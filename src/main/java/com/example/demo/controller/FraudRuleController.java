@@ -1,58 +1,41 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.FraudRule;
-import com.example.demo.service.FraudRuleService;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.model.FraudRule;
+import com.example.demo.service.FraudRuleService;
 
 @RestController
 @RequestMapping("/api/fraud-rules")
 public class FraudRuleController {
 
-    private final FraudRuleService service;
+    private final FraudRuleService ruleService;
 
-    public FraudRuleController(FraudRuleService service) {
-        this.service = service;
+    public FraudRuleController(FraudRuleService ruleService) {
+        this.ruleService = ruleService;
     }
 
     @PostMapping
-    public ResponseEntity<FraudRule> create(
+    public ResponseEntity<?> createRule(
             @RequestBody FraudRule rule
     ) {
-        return new ResponseEntity<>(
-                service.create(rule),
-                HttpStatus.CREATED
-        );
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<FraudRule> update(
-            @PathVariable Long id,
-            @RequestBody FraudRule rule
-    ) {
-        return ResponseEntity.ok(
-                service.update(id, rule)
-        );
-    }
-
-    @GetMapping
-    public ResponseEntity<List<FraudRule>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+        return ResponseEntity.status(201)
+                .body(ruleService.createRule(rule));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<FraudRule>> getActive() {
-        return ResponseEntity.ok(service.getActive());
+    public ResponseEntity<?> getActiveRules() {
+        return ResponseEntity.ok(ruleService.getActiveRules());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<FraudRule> getById(
-            @PathVariable Long id
+    @GetMapping("/{code}")
+    public ResponseEntity<?> getRuleByCode(
+            @PathVariable String code
     ) {
-        return ResponseEntity.ok(service.getById(id));
+        return ResponseEntity.ok(
+                ruleService.getRuleByCode(code)
+        );
     }
 }
+

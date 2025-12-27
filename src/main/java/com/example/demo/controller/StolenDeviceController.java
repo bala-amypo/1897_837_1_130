@@ -1,50 +1,41 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.StolenDeviceReport;
-import com.example.demo.service.StolenDeviceService;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.model.StolenDeviceReport;
+import com.example.demo.service.StolenDeviceService;
 
 @RestController
 @RequestMapping("/api/stolen-devices")
 public class StolenDeviceController {
 
-    private final StolenDeviceService service;
+    private final StolenDeviceService stolenService;
 
-    public StolenDeviceController(StolenDeviceService service) {
-        this.service = service;
+    public StolenDeviceController(StolenDeviceService stolenService) {
+        this.stolenService = stolenService;
     }
 
     @PostMapping
-    public ResponseEntity<StolenDeviceReport> report(
+    public ResponseEntity<?> reportStolen(
             @RequestBody StolenDeviceReport report
     ) {
-        return new ResponseEntity<>(
-                service.report(report),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.status(201)
+                .body(stolenService.reportStolen(report));
     }
 
     @GetMapping
-    public ResponseEntity<List<StolenDeviceReport>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<?> getAllReports() {
+        return ResponseEntity.ok(stolenService.getAllReports());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StolenDeviceReport> getById(
-            @PathVariable Long id
+    @GetMapping("/serial/{serial}")
+    public ResponseEntity<?> getReportsBySerial(
+            @PathVariable String serial
     ) {
-        return ResponseEntity.ok(service.getById(id));
-    }
-
-    @GetMapping("/serial/{serialNumber}")
-    public ResponseEntity<StolenDeviceReport> getBySerial(
-            @PathVariable String serialNumber
-    ) {
-        return ResponseEntity.ok(service.getBySerial(serialNumber));
+        return ResponseEntity.ok(
+                stolenService.getReportsBySerial(serial)
+        );
     }
 }
+
