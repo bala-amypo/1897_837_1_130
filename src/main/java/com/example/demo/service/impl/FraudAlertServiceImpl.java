@@ -10,15 +10,26 @@ import java.util.NoSuchElementException;
 public class FraudAlertServiceImpl {
     private final FraudAlertRecordRepository repo;
 
-    public FraudAlertServiceImpl(FraudAlertRecordRepository repo) { this.repo = repo; }
+    public FraudAlertServiceImpl(FraudAlertRecordRepository repo) {
+        this.repo = repo;
+    }
 
-    public FraudAlertRecord createAlert(FraudAlertRecord alert) { return repo.save(alert); }
+    public FraudAlertRecord createAlert(FraudAlertRecord alert) {
+        return repo.save(alert);
+    }
 
     public FraudAlertRecord resolveAlert(Long id) {
-        FraudAlertRecord alert = repo.findById(id).orElseThrow(() -> new NoSuchElementException("Alert not found"));
+        FraudAlertRecord alert = repo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Alert not found"));
         alert.setResolved(true);
         return repo.save(alert);
     }
 
-    public List<FraudAlertRecord> getAlertsByClaim(Long claimId) { return repo.findByClaimId(claimId); }
+    public List<FraudAlertRecord> getAlertsByClaim(Long claimId) {
+        return repo.findByClaimId(claimId);
+    }
+    
+    public List<FraudAlertRecord> getAllAlerts() {
+        return repo.findAll();
+    }
 }

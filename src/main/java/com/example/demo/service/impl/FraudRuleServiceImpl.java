@@ -10,7 +10,9 @@ import java.util.Optional;
 public class FraudRuleServiceImpl {
     private final FraudRuleRepository repo;
 
-    public FraudRuleServiceImpl(FraudRuleRepository repo) { this.repo = repo; }
+    public FraudRuleServiceImpl(FraudRuleRepository repo) {
+        this.repo = repo;
+    }
 
     public FraudRule createRule(FraudRule rule) {
         if (repo.findByRuleCode(rule.getRuleCode()).isPresent()) {
@@ -19,6 +21,22 @@ public class FraudRuleServiceImpl {
         return repo.save(rule);
     }
 
-    public List<FraudRule> getActiveRules() { return repo.findByActiveTrue(); }
-    public Optional<FraudRule> getRuleByCode(String code) { return repo.findByRuleCode(code); }
+    public FraudRule updateRule(Long id, FraudRule updatedRule) {
+        FraudRule rule = repo.findById(id).orElseThrow();
+        rule.setDescription(updatedRule.getDescription());
+        // update other fields as needed
+        return repo.save(rule);
+    }
+
+    public List<FraudRule> getActiveRules() {
+        return repo.findByActiveTrue();
+    }
+
+    public Optional<FraudRule> getRuleByCode(String code) {
+        return repo.findByRuleCode(code);
+    }
+    
+    public List<FraudRule> getAllRules() {
+        return repo.findAll();
+    }
 }

@@ -1,10 +1,12 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.StolenDeviceReport;
-import com.example.demo.repository.*;
+import com.example.demo.repository.DeviceOwnershipRecordRepository;
+import com.example.demo.repository.StolenDeviceReportRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class StolenDeviceServiceImpl {
@@ -27,5 +29,11 @@ public class StolenDeviceServiceImpl {
         return stolenRepo.findBySerialNumber(serial);
     }
     
-    public List<StolenDeviceReport> getAllReports() { return stolenRepo.findAll(); }
+    public List<StolenDeviceReport> getAllReports() {
+        return stolenRepo.findAll();
+    }
+    
+    public Optional<StolenDeviceReport> getReportById(Long id) {
+        return stolenRepo.findById(id);
+    }
 }
