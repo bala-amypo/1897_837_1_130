@@ -1,62 +1,26 @@
 package com.example.demo.config;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class OpenApiConfig {
+public class PasswordConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder() {
 
-        SecurityScheme bearerScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT");
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return "ENC_" + rawPassword;
+            }
 
-        return new OpenAPI()
-                // Server
-                .servers(List.of(
-                        new Server().url("https://9008.pro604cr.amypo.ai/")
-                ))
-                // JWT Security
-                .components(new Components()
-                        .addSecuritySchemes("bearerAuth", bearerScheme)
-                )
-                .addSecurityItem(
-                        new SecurityRequirement().addList("bearerAuth")
-                );
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return encodedPassword != null &&
+                       encodedPassword.equals("ENC_" + rawPassword);
+            }
+        };
     }
 }
-
-
-
-
-
-
-// package com.example.demo.config;
-// import io.swagger.v3.oas.models.OpenAPI;
-// import io.swagger.v3.oas.models.servers.Server;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import java.util.List;
-
-// @Configuration
-// public class OpenApiConfig {
-
-//     @Bean
-//     public OpenAPI customOpenAPI() {
-//         return new OpenAPI()
-//                 // You need to change the port as per your server
-//                 .servers(List.of(
-//                         new Server().url("https://9008.pro604cr.amypo.ai/")
-//                 ));
-//         }
-// }
-
