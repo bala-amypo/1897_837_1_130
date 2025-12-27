@@ -1,83 +1,33 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "warranty_claim_records")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Entity @Table(name = "warranty_claim_records")
 public class WarrantyClaimRecord {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String serialNumber;
+    private String serialNumber; // Foreign key logic handled in service, stored as String here per DTO flow
 
-    @Column(nullable = false)
     private String claimantName;
-
     private String claimantEmail;
-
-    @Column(nullable = false)
     private String claimReason;
 
-    @Column(nullable = false)
-    private String status;
+    private LocalDateTime submittedAt;
+
+    @Builder.Default
+    private String status = "PENDING";
 
     private LocalDateTime createdAt;
 
-    public WarrantyClaimRecord() {}
-
     @PrePersist
-    public void onCreate() {
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (this.status == null) {
-            this.status = "PENDING";
-        }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public String getClaimantName() {
-        return claimantName;
-    }
-
-    public void setClaimantName(String claimantName) {
-        this.claimantName = claimantName;
-    }
-
-    public String getClaimantEmail() {
-        return claimantEmail;
-    }
-
-    public void setClaimantEmail(String claimantEmail) {
-        this.claimantEmail = claimantEmail;
-    }
-
-    public String getClaimReason() {
-        return claimReason;
-    }
-
-    public void setClaimReason(String claimReason) {
-        this.claimReason = claimReason;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+        this.submittedAt = LocalDateTime.now();
+        if (this.status == null) this.status = "PENDING";
     }
 }
