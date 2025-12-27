@@ -1,9 +1,3 @@
 package com.example.demo.dto;
-
-import lombok.*;
-
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class LoginRequest {
-    private String email;
-    private String password;
-}
+import lombok.Data;
+@Data public class LoginRequest { private String email; private String password; }

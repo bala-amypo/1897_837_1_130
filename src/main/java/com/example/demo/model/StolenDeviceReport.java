@@ -4,21 +4,28 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-@Entity @Table(name = "stolen_device_reports")
-public class StolenDeviceReport {
+@Entity
+@Table(name = "warranty_claim_records")
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
+public class WarrantyClaimRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String serialNumber;
-
-    private String reportedBy;
-    private String details;
-    private LocalDateTime reportDate;
+    private String claimantName;
+    private String claimantEmail;
+    private String claimReason;
+    
+    private LocalDateTime submittedAt;
+    
+    @Builder.Default
+    private String status = "PENDING"; // PENDING, APPROVED, REJECTED, FLAGGED
+    
+    private LocalDateTime createdAt;
 
     @PrePersist
-    protected void onCreate() {
-        this.reportDate = LocalDateTime.now();
+    protected void onCreate() { 
+        this.createdAt = LocalDateTime.now(); 
+        if(this.submittedAt == null) this.submittedAt = LocalDateTime.now();
     }
 }
