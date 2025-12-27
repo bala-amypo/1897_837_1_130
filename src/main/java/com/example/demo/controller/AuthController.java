@@ -33,7 +33,7 @@ public class AuthController {
             @RequestParam String password
     ) {
         return ResponseEntity.ok(
-                userService.login(email, password)
+                UserService.login(email, password)
         );
     }
 }
