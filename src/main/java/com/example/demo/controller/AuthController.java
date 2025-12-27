@@ -22,6 +22,8 @@ public class AuthController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+  // ... (imports remain the same)
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
         if (userRepo.findByEmail(req.getEmail()).isPresent()) {
@@ -31,12 +33,15 @@ public class AuthController {
                 .name(req.getName())
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
-                .roles(req.getRoles())
+                // FIX: If roles are null/empty, force "USER"
+                .roles(req.getRoles() == null || req.getRoles().isEmpty() ? java.util.Set.of("USER") : req.getRoles())
                 .build();
         User saved = userRepo.save(user);
         String token = jwtTokenProvider.createToken(saved.getId(), saved.getEmail(), saved.getRoles());
         return ResponseEntity.ok(new AuthResponse(token, saved.getId(), saved.getEmail(), saved.getRoles()));
     }
+
+// ... (rest of the file remains the same)
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest req) {
