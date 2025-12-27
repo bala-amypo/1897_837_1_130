@@ -1,15 +1,12 @@
 package com.example.demo.dto;
 
+import lombok.*;
 import java.util.Set;
 
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class RegisterRequest {
     private String name;
     private String email;
     private String password;
     private Set<String> roles;
-
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public Set<String> getRoles() { return roles; }
 }
