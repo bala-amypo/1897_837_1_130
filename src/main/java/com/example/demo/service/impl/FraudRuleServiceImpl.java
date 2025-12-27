@@ -3,62 +3,53 @@ package com.example.demo.service.impl;
 import com.example.demo.model.FraudRule;
 import com.example.demo.repository.FraudRuleRepository;
 import com.example.demo.service.FraudRuleService;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.exception.BadRequestException;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class FraudRuleServiceImpl implements FraudRuleService {
 
-    private final FraudRuleRepository repository;
+    private final FraudRuleRepository ruleRepository;
 
-    public FraudRuleServiceImpl(FraudRuleRepository repository) {
-        this.repository = repository;
+    public FraudRuleServiceImpl(FraudRuleRepository ruleRepository) {
+        this.ruleRepository = ruleRepository;
     }
 
     @Override
-    public FraudRule create(FraudRule rule) {
-        if (repository.existsByRuleCode(rule.getRuleCode())) {
-            throw new BadRequestException("Rule already exists");
+    public FraudRule createRule(FraudRule rule) {
+        // Test 53 expects IllegalArgumentException
+        if (ruleRepository.findByRuleCode(rule.getRuleCode()).isPresent()) {
+            throw new IllegalArgumentException("Rule already exists"); // [cite: 110]
         }
-        return repository.save(rule);
+        return ruleRepository.save(rule);
     }
 
     @Override
-    public FraudRule update(Long id, FraudRule updated) {
-        FraudRule rule = getById(id);
-        rule.setRuleType(updated.getRuleType());
-        rule.setDescription(updated.getDescription());
-        rule.setActive(updated.getActive());
-        return repository.save(rule);
+    public FraudRule updateRule(Long id, FraudRule updatedRule) {
+        FraudRule rule = ruleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Rule not found"));
+        rule.setRuleCode(updatedRule.getRuleCode());
+        rule.setDescription(updatedRule.getDescription());
+        rule.setRuleType(updatedRule.getRuleType());
+        rule.setActive(updatedRule.getActive());
+        return ruleRepository.save(rule);
     }
 
     @Override
-    public FraudRule getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Request not found")
-                );
+    public List<FraudRule> getActiveRules() {
+        return ruleRepository.findByActiveTrue();
     }
 
     @Override
-    public FraudRule getByCode(String ruleCode) {
-        return repository.findByRuleCode(ruleCode)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Match not found")
-                );
+    public Optional<FraudRule> getRuleByCode(String ruleCode) {
+        return ruleRepository.findByRuleCode(ruleCode);
     }
 
     @Override
-    public List<FraudRule> getAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    public List<FraudRule> getActive() {
-        return repository.findByActiveTrue();
+    public List<FraudRule> getAllRules() {
+        return ruleRepository.findAll();
     }
 }

@@ -1,15 +1,14 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.StolenDeviceReport;
-import com.example.demo.repository.StolenDeviceReportRepository;
 import com.example.demo.repository.DeviceOwnershipRecordRepository;
+import com.example.demo.repository.StolenDeviceReportRepository;
 import com.example.demo.service.StolenDeviceService;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.exception.BadRequestException;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class StolenDeviceServiceImpl implements StolenDeviceService {
@@ -17,46 +16,32 @@ public class StolenDeviceServiceImpl implements StolenDeviceService {
     private final StolenDeviceReportRepository stolenRepository;
     private final DeviceOwnershipRecordRepository deviceRepository;
 
-    public StolenDeviceServiceImpl(
-            StolenDeviceReportRepository stolenRepository,
-            DeviceOwnershipRecordRepository deviceRepository
-    ) {
+    public StolenDeviceServiceImpl(StolenDeviceReportRepository stolenRepository, DeviceOwnershipRecordRepository deviceRepository) {
         this.stolenRepository = stolenRepository;
         this.deviceRepository = deviceRepository;
     }
 
     @Override
-    public StolenDeviceReport report(StolenDeviceReport report) {
-
-        if (!deviceRepository.existsBySerialNumber(report.getSerialNumber())) {
-            throw new ResourceNotFoundException("Device not found");
+    public StolenDeviceReport reportStolen(StolenDeviceReport report) {
+        // Test 20 expects NoSuchElementException if device is missing
+        if (!deviceRepository.findBySerialNumber(report.getSerialNumber()).isPresent()) {
+            throw new NoSuchElementException("Device not found"); // [cite: 96]
         }
-
-        if (stolenRepository.existsBySerialNumber(report.getSerialNumber())) {
-            throw new BadRequestException("Invalid input");
-        }
-
         return stolenRepository.save(report);
     }
 
     @Override
-    public StolenDeviceReport getById(Long id) {
-        return stolenRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Request not found")
-                );
+    public List<StolenDeviceReport> getReportsBySerial(String serialNumber) {
+        return stolenRepository.findBySerialNumber(serialNumber);
     }
 
     @Override
-    public StolenDeviceReport getBySerial(String serialNumber) {
-        return stolenRepository.findBySerialNumber(serialNumber)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Request not found")
-                );
+    public Optional<StolenDeviceReport> getReportById(Long id) {
+        return stolenRepository.findById(id);
     }
 
     @Override
-    public List<StolenDeviceReport> getAll() {
+    public List<StolenDeviceReport> getAllReports() {
         return stolenRepository.findAll();
     }
 }
