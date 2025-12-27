@@ -1,43 +1,29 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
-import java.security.Key;
-import java.util.*;
+import java.util.Set;
 
-@Component
+import org.springframework.stereotype.Component;
+
+@Component  
 public class JwtTokenProvider {
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String createToken(Long userId, String email, Set<String> roles) {
-        return Jwts.builder()
-                .setSubject(email)
-                .claim("userId", userId)
-                .claim("roles", roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
-                .signWith(key)
-                .compact();
+        return userId + "|" + email + "|" + String.join(",", roles);
     }
 
     public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (Exception e) { return false; }
+        return token != null && token.contains("|");
     }
 
     public String getEmail(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
-    }
-
-    public Long getUserId(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("userId", Long.class);
+        return token.split("\\|")[1];
     }
 
     public Set<String> getRoles(String token) {
-        List<?> roles = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("roles", List.class);
-        return new HashSet<>((Collection<? extends String>) roles);
+        return Set.of(token.split("\\|")[2].split(","));
+    }
+
+    public Long getUserId(String token) {
+        return Long.valueOf(token.split("\\|")[0]);
     }
 }
